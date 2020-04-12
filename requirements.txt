@@ -1,0 +1,17 @@
+beautifulsoup4==4.9.0
+bs4==0.0.1
+certifi==2020.4.5.1
+chardet==3.0.4
+flashtext==2.7
+idna==2.9
+lxml==4.5.0
+numpy==1.18.2
+PyMySQL==0.9.3
+redis==3.4.1
+requests==2.23.0
+simplejson==3.17.0
+six==1.14.0
+soupsieve==2.0
+tushare==1.2.54
+urllib3==1.25.8
+websocket-client==0.57.0

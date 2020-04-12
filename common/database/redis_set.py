@@ -16,7 +16,7 @@ class RedisClient(object):
     def connect(self):
         return StrictRedis(host=self.config['HOST'],
                            port=self.config['PORT'],
-                           # pwd=self.config.get('PWD'),
+                           password=self.config.get('PWD'),
                            db=self.config['DB'],
                            )
 
@@ -43,6 +43,9 @@ class RedisClient(object):
 
     def delete(self, value):
         self.cli.smove(self.set_key, 'delete_member', value)
+
+    def count(self):
+        return self.cli.scard(self.set_key)
 
 
 redis_client = RedisClient()

@@ -6,7 +6,8 @@
 
 # redis配置
 REDIS_CONFIG = {
-    'HOST': '106.13.63.136',
+    'HOST': '127.0.0.1',
+    # 'HOST': '106.13.63.136',
     'PORT': 6379,
     'PWD': 'gmj760808',
     'DB': 1,
@@ -15,11 +16,10 @@ REDIS_CONFIG = {
 
 # mysql配置
 BD_MYSQL_CONFIG = {
-    'HOST': '106.13.63.136',
+    'HOST': '127.0.0.1',
+    # 'HOST': '106.13.63.136',
     'USER': 'root',
-    'PORT': '3306',
+    'PORT': 3306,
     'PWD': 'gmj760808',
     'DB': 'tenstocks_test',
 }
-
-

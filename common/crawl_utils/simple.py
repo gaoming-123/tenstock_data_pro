@@ -13,22 +13,24 @@ simple_header = {
 
 # 获取代理ip
 def get_proxy():
-    res = requests.get("http://127.0.0.1:5010/get/")
+    res = requests.get("http://106.13.63.136:5010/get/")
     res = json.loads(res.text)
     if 'code' in res:
         return None
     return res['proxy']
 
 
-def get_by_proxy(url, data=None, headers=simple_header):
+def get_by_proxy(url, data=None, headers=simple_header, verify=True):
     res = ''
     while not res:
         proxyIp = get_proxy()
         try:
-            res = requests.get(url, proxies={'http': f'http://{proxyIp}'}, data=data, headers=headers, timeout=10)
+            res = requests.get(url, proxies={'http': f'http://{proxyIp}'}, data=data, headers=headers, verify=verify,
+                               timeout=10)
         except:
             try:
-                res = requests.get(url, proxies={'https': f'https://{proxyIp}'}, data=data, headers=headers, timeout=10)
+                res = requests.get(url, proxies={'https': f'https://{proxyIp}'}, data=data, headers=headers,
+                                   verify=verify, timeout=10)
             except:
                 pass
     return res
@@ -50,7 +52,7 @@ def post_by_proxy(url, data=None, headers=simple_header):
 
 
 def get_url(url, data=None, headers=simple_header):
-    return requests.get(url, data, headers=headers)
+    return requests.get(url, data=data, headers=headers)
 
 
 def get_json(txt):
