@@ -67,6 +67,7 @@ def request_trade_day_minute(symbol):
         line_data.append(symbol)
         # 分钟，收盘价，成交额，均价，成交量
         result.append(tuple(line_data))
+    result = [i for i in result if i[4]]
     return result
 
 
