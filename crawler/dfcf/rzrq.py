@@ -7,7 +7,6 @@ import time
 from common.crawl_utils.simple import get_url, get_json
 from crawler import bd_mysql_cnn
 
-
 # 从东方财富网获取个股融资融券数据
 def get_rongzirongquan_from_dfcf(code, stock_id, last_date):
     """从东方财富网获取个股融资融券数据 并解析"""
@@ -70,7 +69,7 @@ def get_rongzirongquan_from_dfcf(code, stock_id, last_date):
     data_json = get_json(json_text.lower())['result']
     # data_json = get_json(res.text)
     if not data_json:
-        print(f'{code} 融资融券无数据')
+        # print(f'{code} 融资融券无数据')
         return
     max_page = data_json['pages']
     # page = data_json['pageindex']
@@ -155,7 +154,7 @@ def get_rongzirongquan_from_dfcf(code, stock_id, last_date):
         result.append(tuple(da.values()))
     sql = 'insert into stocks_rzrq(`trade_date`,`spj`,`zdf`,`rzyezb`,`rzmre`,`rzche`,`rzjme`,`rzye`,`rzrqye`,`rzrqyecz`,`rqye`,`rqmcl`,`rqchl`,`rqjmg`,`rqyl`,`rqpjcb`,`stock_id`,`is_delete`,`create_time`,`update_time`)  values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'
     bd_mysql_cnn.save_many(sql, result)
-    print(f'更新-{code}-融资融券成功')
+    # print(f'更新-{code}-融资融券成功')
     return True
 
 
