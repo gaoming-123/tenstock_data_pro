@@ -47,5 +47,8 @@ class RedisClient(object):
     def count(self):
         return self.cli.scard(self.set_key)
 
+    def clear(self, key):
+        self.cli.delete(key)
+
 
 redis_client = RedisClient()

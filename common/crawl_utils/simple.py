@@ -5,6 +5,7 @@
 import json
 from lxml import etree
 import requests
+import time
 
 simple_header = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.70 Safari/537.36',
@@ -24,15 +25,20 @@ def get_by_proxy(url, data=None, headers=simple_header, verify=True):
     res = ''
     while not res:
         proxyIp = get_proxy()
-        try:
-            res = requests.get(url, proxies={'http': f'http://{proxyIp}'}, data=data, headers=headers, verify=verify,
-                               timeout=10)
-        except:
+        if not proxyIp:
+            res = requests.get(url, data=data, headers=headers, verify=verify, timeout=10)
+            time.sleep(3)
+        else:
             try:
-                res = requests.get(url, proxies={'https': f'https://{proxyIp}'}, data=data, headers=headers,
-                                   verify=verify, timeout=10)
+                res = requests.get(url, proxies={'http': f'http://{proxyIp}'}, data=data, headers=headers,
+                                   verify=verify,
+                                   timeout=10)
             except:
-                pass
+                try:
+                    res = requests.get(url, proxies={'https': f'https://{proxyIp}'}, data=data, headers=headers,
+                                       verify=verify, timeout=10)
+                except:
+                    pass
     return res
 
 

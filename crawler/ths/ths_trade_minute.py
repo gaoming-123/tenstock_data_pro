@@ -4,12 +4,6 @@
 # desc:
 
 import time
-
-header = {
-    'Referer': 'http://stockpage.10jqka.com.cn/HQ_v4.html',
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.90 Safari/537.36',
-}
-import requests
 import json
 import re
 from random import random
@@ -20,12 +14,19 @@ from common.database.redis_set import RedisClient
 
 bd_cnn = MysqlConnect(BD_MYSQL_CONFIG)
 redis_cli = RedisClient()
+header = {
+    'Referer': 'http://stockpage.10jqka.com.cn/HQ_v4.html',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.90 Safari/537.36',
+}
 
 
 def request_all_stocks_minutes_data():
     stocks = bd_cnn.fetchall('select symbol from stocks_a_stocks')
+    redis_cli.clear('a_stocks_minutes_trade')
     redis_cli.change_key('a_stocks_minutes_trade')
     number = 0
+    # 循环次数  最多循环5次
+    times = 0
     while len(stocks) != number:
         for stock in stocks:
             symbol = stock['symbol']
@@ -42,6 +43,9 @@ def request_all_stocks_minutes_data():
             except:
                 pass
         number = redis_cli.count()
+        times += 1
+        if times > 5:
+            break
 
 
 def request_trade_day_minute(symbol):
