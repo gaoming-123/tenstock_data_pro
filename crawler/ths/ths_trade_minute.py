@@ -26,6 +26,10 @@ def request_all_stocks_minutes_data():
     redis_cli.change_key('a_stocks_minutes_trade')
     number = 0
     # 循环次数  最多循环5次
+    res = request_trade_day_minute('000001')
+    check_time = res[0][0]
+    if bd_cnn.fetchall(f'select * from stocks_minutetrade where symbol="000001" and trade_time="{check_time}"'):
+        return
     times = 0
     while len(stocks) != number:
         for stock in stocks:
