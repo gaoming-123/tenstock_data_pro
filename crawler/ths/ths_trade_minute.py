@@ -8,12 +8,11 @@ import json
 import re
 from random import random
 from common.crawl_utils.simple import get_by_proxy
-from common.database.mysql import MysqlConnect
-from common.database.db_config import BD_MYSQL_CONFIG
 from common.database.redis_set import RedisClient
+from crawler import bd_mysql_cnn
 
-bd_cnn = MysqlConnect(BD_MYSQL_CONFIG)
 redis_cli = RedisClient()
+
 header = {
     'Referer': 'http://stockpage.10jqka.com.cn/HQ_v4.html',
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.90 Safari/537.36',
@@ -21,14 +20,14 @@ header = {
 
 
 def request_all_stocks_minutes_data():
-    stocks = bd_cnn.fetchall('select symbol from stocks_a_stocks')
+    stocks = bd_mysql_cnn.fetchall('select symbol from stocks_a_stocks')
     redis_cli.clear('a_stocks_minutes_trade')
     redis_cli.change_key('a_stocks_minutes_trade')
     number = 0
     # 循环次数  最多循环5次
     res = request_trade_day_minute('000001')
     check_time = res[0][0]
-    if bd_cnn.fetchall(f'select * from stocks_minutetrade where symbol="000001" and trade_time="{check_time}"'):
+    if bd_mysql_cnn.fetchall(f'select * from stocks_minutetrade where symbol="000001" and trade_time="{check_time}"'):
         return
     times = 0
     while len(stocks) != number:
@@ -39,7 +38,7 @@ def request_all_stocks_minutes_data():
                 continue
             try:
                 res = request_trade_day_minute(symbol)
-                bd_cnn.save_many(
+                bd_mysql_cnn.save_many(
                     f'insert into stocks_minutetrade(trade_time,close,money,average,amount,symbol) values (%s,%s,%s,%s,%s,%s)',
                     res)
                 redis_cli.add(hash_txt)
