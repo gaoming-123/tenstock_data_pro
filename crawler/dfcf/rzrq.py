@@ -5,8 +5,9 @@
 import re
 import time
 from common.crawl_utils.simple import get_url, get_json
-from crawler import bd_mysql_cnn
+from common.database.mysql import MysqlConnect
 
+bd_mysql_cnn = MysqlConnect()
 # 从东方财富网获取个股融资融券数据
 def get_rongzirongquan_from_dfcf(code, stock_id, last_date):
     """从东方财富网获取个股融资融券数据 并解析"""

@@ -9,8 +9,9 @@ import re
 from random import random
 from common.crawl_utils.simple import get_by_proxy
 from common.database.redis_set import RedisClient
-from crawler import bd_mysql_cnn
+from common.database.mysql import MysqlConnect
 
+bd_mysql_cnn = MysqlConnect()
 redis_cli = RedisClient()
 
 header = {
