@@ -6,7 +6,7 @@
 import time
 import json
 import re
-from random import random
+import random
 from common.crawl_utils.simple import get_by_proxy
 from common.database.redis_set import RedisClient
 from common.database.mysql import MysqlConnect
@@ -26,10 +26,16 @@ def request_all_stocks_minutes_data():
     redis_cli.change_key('a_stocks_minutes_trade')
     number = 0
     # 循环次数  最多循环5次
-    res = request_trade_day_minute('000001')
-    check_time = res[0][0]
-    if bd_mysql_cnn.fetchall(f'select * from stocks_minutetrade where symbol="000001" and trade_time="{check_time}"'):
-        return
+    check_time = 0
+    while check_time < 5:
+        try:
+            res = request_trade_day_minute('000001')
+            check_time = res[0][0]
+            if bd_mysql_cnn.fetchall(
+                    f'select * from stocks_minutetrade where symbol="000001" and trade_time="{check_time}"'):
+                return
+        except:
+            check_time += 1
     times = 0
     while len(stocks) != number:
         for stock in stocks:
@@ -40,10 +46,10 @@ def request_all_stocks_minutes_data():
             try:
                 res = request_trade_day_minute(symbol)
                 bd_mysql_cnn.save_many(
-                    f'insert into stocks_minutetrade(trade_time,close,money,average,amount,symbol) values (%s,%s,%s,%s,%s,%s)',
+                    f'insert into stocks_minutetrade(trade_time,close,money,average,amount,symbol,trade_day) values (%s,%s,%s,%s,%s,%s,%s)',
                     res)
                 redis_cli.add(hash_txt)
-                time.sleep(5 * random())
+                time.sleep(5 * random.random())
             except:
                 pass
         number = redis_cli.count()
@@ -59,8 +65,8 @@ def request_trade_day_minute(symbol):
     :return:  列表[(分钟，收盘价，成交额，均价，成交量),] 例如: ('202004030930', '7.77', '5436669', '7.770', '699700')
     """
     code = f'hs_{symbol}'
-    # url = f'http://d.10jqka.com.cn/v6/time/{code}/last.js'
-    url = f'http://d.10jqka.com.cn/v6/time/{code}/defer/last.js'
+    url = f'http://d.10jqka.com.cn/v6/time/{code}/last.js'
+    # url = f'http://d.10jqka.com.cn/v6/time/{code}/defer/last.js'
     res = get_by_proxy(url, headers=header)
     # print(res.text)
     trade_data = re.findall('({.*})', res.text)[0]
@@ -71,8 +77,8 @@ def request_trade_day_minute(symbol):
     result = []
     for line in minutes:
         line_data = line.split(',')
-        line_data[0] = trade_day + line_data[0]
         line_data.append(symbol)
+        line_data.append(trade_day)
         # 分钟，收盘价，成交额，均价，成交量
         result.append(tuple(line_data))
     result = [i for i in result if i[4]]
@@ -80,4 +86,7 @@ def request_trade_day_minute(symbol):
 
 
 if __name__ == '__main__':
-    request_all_stocks_minutes_data()
+    # request_all_stocks_minutes_data()
+    # data = request_trade_day_minute('000158')
+    data = request_trade_day_minute('000158')
+    print(data)
